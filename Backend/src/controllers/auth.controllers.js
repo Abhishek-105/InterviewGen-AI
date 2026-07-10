@@ -42,8 +42,13 @@ async function registerUserController(req, res) {
         { expiresIn: "1d" }
     )
 
-    res.cookie("token", token)
-
+    // Yahan replace karein:
+    res.cookie("token", token, {
+        httpOnly: true,
+        secure: true,        // Production ke liye true hona zaroori hai
+        sameSite: "none",    // Cross-domain ke liye 'none' zaroori hai
+        maxAge: 24 * 60 * 60 * 1000 // 1 din
+    })
 
     res.status(201).json({
         message: "User registered successfully",
@@ -53,8 +58,6 @@ async function registerUserController(req, res) {
             email: user.email
         }
     })
-
-} 
 
 
 /**
@@ -139,6 +142,7 @@ async function getMeController(req, res) {
         }
     })
 
+}
 }
 
 
