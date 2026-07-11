@@ -1,33 +1,44 @@
-import { createContext,useState,useEffect } from "react";
-import { getMe } from "./services/auth.api";
+import { createContext, useState, useEffect, useContext } from "react";
+import { getMe, login, register } from "./services/auth.api"; // Import functions
 
+export const AuthContext = createContext();
 
-export const AuthContext = createContext()
+export const AuthProvider = ({ children }) => {
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-
-export const AuthProvider = ({ children }) => { 
-    const [user, setUser] = useState(null)
-    const [loading, setLoading] = useState(true)
-
-    // Initial check: App load hote hi user ko check karo
+    // Initial check
     useEffect(() => {
-        const checkAuth = async () => {
+        const init = async () => {
             try {
                 const data = await getMe();
-                if (data) setUser(data);
+                setUser(data);
             } catch (err) {
-                console.error("Auth check failed:", err);
                 setUser(null);
             } finally {
                 setLoading(false);
             }
         };
-        checkAuth();
-    }, []); // Empty array ka matlab hai sirf ek baar run hoga
+        init();
+    }, []);
+
+    
+    const handleRegister = async (userData) => {
+        return await register(userData);
+    };
+
+    const handleLogin = async (credentials) => {
+        const data = await login(credentials);
+        setUser(data);
+        return data;
+    };
 
     return (
-        <AuthContext.Provider value={{user, setUser, loading, setLoading}} >
+        
+        <AuthContext.Provider value={{ loading, user, handleRegister, handleLogin }}>
             {children}
         </AuthContext.Provider>
-    )
-}
+    );
+};
+
+export const useAuth = () => useContext(AuthContext);

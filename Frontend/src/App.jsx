@@ -9,7 +9,7 @@ function App() {
       <RouterProvider router={router} />
       </InterviewProvider>
     </AuthProvider>
-  )
+  );
 }
 
 export default App

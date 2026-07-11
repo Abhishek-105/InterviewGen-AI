@@ -12,7 +12,6 @@ const Register = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // handleRegister call karein
         await handleRegister({ username, email, password }); 
         navigate("/login");
     }
