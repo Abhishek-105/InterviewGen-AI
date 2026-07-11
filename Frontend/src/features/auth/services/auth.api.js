@@ -1,42 +1,53 @@
-import axios from "axios";
+import { createContext, useState, useEffect, useContext } from "react";
+import { login, register, getMe } from "./services/auth.api";
 
-const api = axios.create({
-    baseURL: "https://interviewgene-ai-backend.onrender.com",
-    withCredentials: true, 
-});
+export const AuthContext = createContext();
 
-export async function register({ username, email, password }) {
-    try {
-        const response = await api.post('/auth/register', { username, email, password });
-        return response.data;
-    } catch (err) {
-        throw err; // Ye zaroori hai taaki context ko pata chale ki error aaya hai
-    }
-}
+export const AuthProvider = ({ children }) => {
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-export async function login({ email, password }) {
-    try {
-        const response = await api.post("/auth/login", { email, password });
-        return response.data;
-    } catch (err) {
-        throw err; 
-    }
-}
+    useEffect(() => {
+        const checkAuth = async () => {
+            try {
+                const data = await getMe();
+                setUser(data);
+            } catch (err) {
+                setUser(null);
+            } finally {
+                setLoading(false);
+            }
+        };
+        checkAuth();
+    }, []);
 
-export async function logout() {
-    try {
-        const response = await api.get("/auth/logout");
-        return response.data;
-    } catch (err) {
-        throw err;
-    }
-}
+    const handleRegister = async (userData) => {
+        try {
+            await register(userData);
+            return true;
+        } catch (err) {
+            console.error("Context Register Error:", err);
+            return false;
+        }
+    };
 
-export async function getMe() {
-    try {
-        const response = await api.get("/auth/get-me");
-        return response.data;
-    } catch (err) {
-        throw err; 
-    }
-}
+    const handleLogin = async (credentials) => {
+        try {
+            const data = await login(credentials);
+            setUser(data);
+            return true;
+        } catch (err) {
+            console.error("Context Login Error:", err);
+            return false;
+        }
+    };
+
+    return (
+        <AuthContext.Provider value={{ loading, user, handleRegister, handleLogin }}>
+            {children}
+        </AuthContext.Provider>
+    );
+};
+
+
+export const useAuth = () => useContext(AuthContext);
