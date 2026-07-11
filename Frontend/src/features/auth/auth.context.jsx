@@ -1,15 +1,14 @@
 import { createContext, useState, useEffect, useContext } from "react";
-import { getMe, login, register } from "./services/auth.api"; // Import functions
-
+import { login, register, getMe } from "./services/auth.api"; 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // Initial check
+   
     useEffect(() => {
-        const init = async () => {
+        const checkAuth = async () => {
             try {
                 const data = await getMe();
                 setUser(data);
@@ -19,26 +18,39 @@ export const AuthProvider = ({ children }) => {
                 setLoading(false);
             }
         };
-        init();
+        checkAuth();
     }, []);
 
-    
+    // 3. Register logic
     const handleRegister = async (userData) => {
-        return await register(userData);
+        try {
+            await register(userData);
+            return true;
+        } catch (err) {
+            console.error(err);
+            return false;
+        }
     };
 
+  
     const handleLogin = async (credentials) => {
-        const data = await login(credentials);
-        setUser(data);
-        return data;
+        try {
+            const data = await login(credentials);
+            setUser(data);
+            return true;
+        } catch (err) {
+            console.error(err);
+            return false;
+        }
     };
 
+    
     return (
-        
         <AuthContext.Provider value={{ loading, user, handleRegister, handleLogin }}>
             {children}
         </AuthContext.Provider>
     );
 };
+
 
 export const useAuth = () => useContext(AuthContext);
