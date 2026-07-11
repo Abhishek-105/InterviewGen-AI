@@ -1,8 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-    // baseURL mein /api dalne se endpoints chote ho jayenge
-    baseURL: "https://interviewgene-ai-backend.onrender.com/api",
+    baseURL: "https://interviewgene-ai-backend.onrender.com",
     withCredentials: true, 
 });
 
@@ -38,6 +37,6 @@ export async function getMe() {
         const response = await api.get("/auth/get-me");
         return response.data;
     } catch (err) {
-        throw err; // 401 error yahan se bahar jayega aur context handle karega
+        throw err; 
     }
 }

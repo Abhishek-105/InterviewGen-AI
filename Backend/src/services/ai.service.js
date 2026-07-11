@@ -5,7 +5,7 @@ const ai = new GoogleGenAI({
     apiKey: process.env.GOOGLE_GENAI_API_KEY
 })
 
-// Pure Native Schema Definition matching Google API expectations perfectly
+
 const nativeInterviewReportSchema = {
     type: "OBJECT",
     properties: {
