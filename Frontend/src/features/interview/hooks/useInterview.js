@@ -80,7 +80,7 @@ export const useInterview = () => {
     const getResumePdf = async (interviewReportId) => {
         setLoading(true)
         try {
-            const response = await generateResumePdf({ interviewReportId })
+            const response = await generateResumePdf(interviewReportId)
             // Ensure response has the data blob (axios handles blobs in response.data)
             const blobData = response?.data ? response.data : response;
             
