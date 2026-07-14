@@ -49,7 +49,7 @@ async function generateInterViewReportController(req, res) {
     user: userId,
     resume: resumeText,
     selfDescription,
-    jobDescription,      
+    jobDescription
 });
 
     return res.status(201).json({
