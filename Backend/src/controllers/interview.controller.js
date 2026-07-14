@@ -32,6 +32,16 @@ async function generateInterViewReportController(req, res) {
 
     console.log("Gemini Response:", aiReport);
 
+    // FIX: Gemini kabhi-kabhi severity "Medium"/"Low"/"High" (capitalized) bhejta hai,
+    // lekin schema ka enum lowercase expect karta hai. Yahan normalize kar rahe hain
+    // taaki ValidationError na aaye.
+    if (aiReport.skillGaps && Array.isArray(aiReport.skillGaps)) {
+      aiReport.skillGaps = aiReport.skillGaps.map((gap) => ({
+        ...gap,
+        severity: gap.severity ? gap.severity.toLowerCase() : gap.severity,
+      }));
+    }
+
     const userId = req.user ? (req.user._id || req.user.id) : null;
 
     const interviewReport = await interviewReportModel.create({
@@ -98,7 +108,7 @@ async function getAllInterviewReportsController(req, res) {
 async function generateResumePdfController(req, res) {
   try {
     // NOTE: param name must match your route definition exactly.
-    // e.g. router.get("/resume/pdf/:interviewReportId", ...)
+    // e.g. router.post("/resume/pdf/:interviewReportId", ...)
     const { interviewReportId } = req.params;
 
     if (!interviewReportId || interviewReportId === "undefined") {
