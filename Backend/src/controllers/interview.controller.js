@@ -45,12 +45,12 @@ async function generateInterViewReportController(req, res) {
     const userId = req.user ? (req.user._id || req.user.id) : null;
 
     const interviewReport = await interviewReportModel.create({
-      user: userId,
-      resume: resumeText,
-      selfDescription,
-      jobDescription,
-      ...aiReport,
-    });
+    ...aiReport,        
+    user: userId,
+    resume: resumeText,
+    selfDescription,
+    jobDescription,      
+});
 
     return res.status(201).json({
       interviewReport,
